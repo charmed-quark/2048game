@@ -1,6 +1,7 @@
-import sys, pygame as pg, random
+#import sys, pygame as pg, random
+import sys, random
 from gridmoves import Moves
-pg.init()
+#pg.init()
 
 class GameLogic:
 
