@@ -82,7 +82,7 @@ class GameLogic:
                     if event.key == K_LEFT:
                         game_grid = move_left(game_grid)
                     elif event.key == K_RIGHT:
-                        game_grid = move_left(game_grid)
+                        game_grid = move_right(game_grid)
                     elif event.key == K_UP:
                         game_grid = move_up(game_grid)
                     elif event.key == K_DOWN:
@@ -123,5 +123,5 @@ class GameLogic:
             self.check_win()
 
 
-game = GameLogic(4, 2048)
-game.gameloop()
+#game = GameLogic(4, 2048)
+#game.gameloop()
