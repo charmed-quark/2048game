@@ -17,6 +17,7 @@ class GameLogic:
         self.empty_cells = [(x, y) for x in range(self.GRID_SIZE) for y in range(self.GRID_SIZE)]
         self.next_move = None
         self.waiting_for_move = True
+        self.spawn_on_next_turn = True
         self.legal_moves = ["left", "right", "up", "down", "quit"]
 
 
@@ -69,60 +70,57 @@ class GameLogic:
     Called externally by logic instance to get user input
     """
     def set_next_move(self, move):
-        self.waiting_for_move = False
+        #self.waiting_for_move = False
         if move in self.legal_moves:
             self.next_move = move
         else:
             raise ValueError("No you can't do that!!!!!!!!!!!!")
 
 
-    def gameloop(self):
-        spawn_on_next_turn = True
-        self.waiting_for_move = True
+    def turn(self, move):
+        #spawn_on_next_turn = True
+        #self.waiting_for_move = True
         #print(self.game_grid)
 
-        while True:
+        #while True:
+        if self.spawn_on_next_turn:
+            self.spawn_tile()
 
-            if spawn_on_next_turn:
-                self.spawn_tile()
+        # command line version
+        #move = input()
+        #while self.waiting_for_move:
+        #    pass
+        self.spawn_on_next_turn = True
+        if move == "left" and self.game_grid != GameLogic.moves.move_left(self.game_grid):
+            self.game_grid = GameLogic.moves.move_left(self.game_grid)
+        elif move == "right" and self.game_grid != GameLogic.moves.move_right(self.game_grid):
+            self.game_grid = GameLogic.moves.move_right(self.game_grid)
+        elif move == "up" and self.game_grid != GameLogic.moves.move_up(self.game_grid):
+            self.game_grid = GameLogic.moves.move_up(self.game_grid)
+        elif move == "down" and self.game_grid != GameLogic.moves.move_down(self.game_grid):
+            self.game_grid = GameLogic.moves.move_down(self.game_grid)
+        elif move == "quit":  #quit
+            sys.exit()
+        else:   # if the move has no effect, then don't spawn a new tile
+            self.spawn_on_next_turn = False
+            print("YOU FUCKED UP URURHGURHGUHG")
 
-            # draw here
-            for row in self.game_grid:
-                print(row)  #placeholder
+        # update the list of empty cells
+        # this feels absolutely horrible, idk if it's better to just clear it
+        for row in range(self.GRID_SIZE):
+            for col in range(self.GRID_SIZE):
+                if self.game_grid[row][col] == 0 and (row, col) not in self.empty_cells:
+                    self.empty_cells.append((row, col))
+                elif self.game_grid[row][col] != 0 and (row, col) in self.empty_cells:
+                    self.empty_cells.remove((row, col))
 
-            # command line version
-            #move = input()
+        # draw here
+        for row in self.game_grid:
+            print(row)  #placeholder
+        print('*****')
 
-            while self.waiting_for_move:
-                pass
+        if(len(self.empty_cells) == 0): 
+            self.check_loss()
 
-            spawn_on_next_turn = True
-            if self.next_move == "left" and self.game_grid != GameLogic.moves.move_left(self.game_grid):
-                self.game_grid = GameLogic.moves.move_left(self.game_grid)
-            elif self.next_move == "right" and self.game_grid != GameLogic.moves.move_right(self.game_grid):
-                self.game_grid = GameLogic.moves.move_right(self.game_grid)
-            elif self.next_move == "up" and self.game_grid != GameLogic.moves.move_up(self.game_grid):
-                self.game_grid = GameLogic.moves.move_up(self.game_grid)
-            elif self.next_move == "down" and self.game_grid != GameLogic.moves.move_down(self.game_grid):
-                self.game_grid = GameLogic.moves.move_down(self.game_grid)
-            elif self.next_move == "quit":  #quit
-                sys.exit()
-            else:   # if the move has no effect, then don't spawn a new tile
-                spawn_on_next_turn = False
-                print("YOU FUCKED UP URURHGURHGUHG")
-
-            # update the list of empty cells
-            # this feels absolutely horrible, idk if it's better to just clear it
-            for row in range(self.GRID_SIZE):
-                for col in range(self.GRID_SIZE):
-                    if self.game_grid[row][col] == 0 and (row, col) not in self.empty_cells:
-                        self.empty_cells.append((row, col))
-                    elif self.game_grid[row][col] != 0 and (row, col) in self.empty_cells:
-                        self.empty_cells.remove((row, col))
-
-            if(len(self.empty_cells) == 0): 
-                self.check_loss()
-
-            self.check_win()
-
-            self.waiting_for_move = True
+        self.check_win()
+        #self.waiting_for_move = True
