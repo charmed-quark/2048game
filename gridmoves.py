@@ -3,7 +3,7 @@ import numpy as np
 
 class Moves:
 
-    ### MOVEMENT FUNCTIONS
+    ### MOVEMENT FUNCTIONS ###
     # Work by matrix manipulation
     # Makes copies of the game state in order to test moves -- could be optimized?
     # Although these are arrays of 16 elements and probably AT ABSOLUTE MOST 100.

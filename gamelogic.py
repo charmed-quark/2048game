@@ -54,7 +54,7 @@ class GameLogic:
     Creates a new tile in an empty cell after a legal move.
     """
     def spawn_tile(self):
-        if random.random() > 0.9:
+        if random.random() < 0.1:
             #10% probability to spawn a 4
             val = 4
         else:   
@@ -66,20 +66,18 @@ class GameLogic:
 
     def turn(self, move):
 
-        self.spawn_on_next_turn = True
-        if move == "left" and self.game_grid != GameLogic.moves.move_left(self.game_grid):
+        old_state = self.game_grid
+        if move == "left":
             self.game_grid = GameLogic.moves.move_left(self.game_grid)
-        elif move == "right" and self.game_grid != GameLogic.moves.move_right(self.game_grid):
+        elif move == "right":
             self.game_grid = GameLogic.moves.move_right(self.game_grid)
-        elif move == "up" and self.game_grid != GameLogic.moves.move_up(self.game_grid):
+        elif move == "up":
             self.game_grid = GameLogic.moves.move_up(self.game_grid)
-        elif move == "down" and self.game_grid != GameLogic.moves.move_down(self.game_grid):
+        elif move == "down":
             self.game_grid = GameLogic.moves.move_down(self.game_grid)
         elif move == "quit":  #quit
             sys.exit()
-        else:   # if the move has no effect, then don't spawn a new tile
-            self.spawn_on_next_turn = False
-            print("This move is DANGEROUS AND ILLEGAL")
+        
 
         # update the list of empty cells
         for row in range(self.GRID_SIZE):
@@ -89,7 +87,10 @@ class GameLogic:
                 elif self.game_grid[row][col] != 0 and (row, col) in self.empty_cells:
                     self.empty_cells.remove((row, col))
         
-        if self.spawn_on_next_turn:
+        if old_state == self.game_grid:
+            # if the move has no effect, then don't spawn a new tile
+            print("This move is DANGEROUS AND ILLEGAL")
+        else:
             self.spawn_tile()
 
         # draw here
