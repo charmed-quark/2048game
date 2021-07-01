@@ -65,16 +65,7 @@ class GameLogic:
         self.game_grid[row][col] = val
 
     def turn(self, move):
-        #spawn_on_next_turn = True
-        #self.waiting_for_move = True
-        #print(self.game_grid)
 
-        #while True:
-
-        # command line version
-        #move = input()
-        #while self.waiting_for_move:
-        #    pass
         self.spawn_on_next_turn = True
         if move == "left" and self.game_grid != GameLogic.moves.move_left(self.game_grid):
             self.game_grid = GameLogic.moves.move_left(self.game_grid)
@@ -88,10 +79,9 @@ class GameLogic:
             sys.exit()
         else:   # if the move has no effect, then don't spawn a new tile
             self.spawn_on_next_turn = False
-            print("YOU FUCKED UP URURHGURHGUHG")
+            print("This move is DANGEROUS AND ILLEGAL")
 
         # update the list of empty cells
-        # this feels absolutely horrible, idk if it's better to just clear it
         for row in range(self.GRID_SIZE):
             for col in range(self.GRID_SIZE):
                 if self.game_grid[row][col] == 0 and (row, col) not in self.empty_cells:
@@ -111,6 +101,3 @@ class GameLogic:
             self.check_loss()
 
         self.check_win()
-        if self.spawn_on_next_turn:
-            print("set to spawn on the next turn:))")
-        #self.waiting_for_move = True
