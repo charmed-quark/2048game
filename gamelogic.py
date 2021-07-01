@@ -1,7 +1,5 @@
-#import sys, pygame as pg, random
 import sys, random
 from gridmoves import Moves
-#pg.init()
 
 class GameLogic:
 
@@ -15,12 +13,6 @@ class GameLogic:
         self.game_won = False
         self.game_grid = [[0 for x in range(self.GRID_SIZE)] for y in range(self.GRID_SIZE)]
         self.empty_cells = [(x, y) for x in range(self.GRID_SIZE) for y in range(self.GRID_SIZE)]
-
-
-    #GRID_SIZE = 4           # expand this to be optional later and add 3x3 and 5x5
-    #TARGET_SCORE = 2048
-    # initialize N x N game grid
-    # keep track of empty cells for spawning new blocks; initially all cells empty
 
     """
     Checks if the target score has been attained. If yes, the game is won.
@@ -74,22 +66,6 @@ class GameLogic:
             # draw here
             for row in self.game_grid:
                 print(row)  #placeholder
-
-            # listen for move.
-            # update the game state to match the move.
-            """for event in pg.event.get():
-                if event.type == pg.KEYDOWN:
-                    if event.key == K_LEFT:
-                        game_grid = move_left(game_grid)
-                    elif event.key == K_RIGHT:
-                        game_grid = move_left(game_grid)
-                    elif event.key == K_UP:
-                        game_grid = move_up(game_grid)
-                    elif event.key == K_DOWN:
-                        game_grid = move_down(game_grid)
-                    elif event.key == K_q:  #quit
-                        sys.exit()
-            """
 
             # command line version
             move = input()
