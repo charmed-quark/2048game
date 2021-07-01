@@ -50,7 +50,7 @@ class GameLogic:
             move_down(self.game_grid) == self.game_grid:
                 self.game_over = True
                 print("You lose!")
-                sys.exit()
+                #sys.exit()
 
     """
     Creates a new tile in an empty cell after a legal move.
