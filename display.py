@@ -74,8 +74,8 @@ while running:
         elif event.type == QUIT:
             running = False
 
-    # Fill the background with white
-    screen.fill((255, 255, 255))
+    # Fill the background with off-white
+    screen.fill((249, 246, 242))
 
     # Draw text blocks
     screen.blit(title_surface, (CELL_WIDTH, CELL_WIDTH/2))
@@ -99,7 +99,7 @@ while running:
                 else:
                     num_color = (249, 246, 242) #light color
                 number = myfont.render(str(cell_value), False, num_color)
-                screen.blit(number, (x,y))
+                screen.blit(number, (x, y))
 
 
     # Flip the display (refreshes)
