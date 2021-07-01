@@ -1,5 +1,4 @@
 import sys, random
-#from gridmoves import Moves
 
 from gridmoves import (
     move_left,
@@ -26,12 +25,6 @@ class GameLogic:
         self.empty_cells = [(x, y) for x in range(self.GRID_SIZE) for y in range(self.GRID_SIZE)]
         self.spawn_on_next_turn = True
         self.legal_moves = ["left", "right", "up", "down", "quit"]
-
-
-    #GRID_SIZE = 4           # expand this to be optional later and add 3x3 and 5x5
-    #TARGET_SCORE = 2048
-    # initialize N x N game grid
-    # keep track of empty cells for spawning new blocks; initially all cells empty
 
     """
     Checks if the target score has been attained. If yes, the game is won.

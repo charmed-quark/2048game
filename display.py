@@ -7,13 +7,17 @@ from pygame.locals import (
     K_LEFT,
     K_RIGHT,
     K_ESCAPE,
+    K_SPACE,
     K_q,
     KEYDOWN,
+    MOUSEBUTTONDOWN,
     QUIT,
 )
 
 pg.init()
 pg.font.init()
+
+### CONFIGS ###
 
 GRID_SIZE = 4
 CELL_WIDTH = 100
@@ -30,6 +34,8 @@ pg.display.set_caption('2048 clone')
 
 ### COLORS ###
 grid_color = (187, 173, 160)
+dark_color = (119, 110, 101)
+light_color = (249, 246, 242)
 cell_colors = {
     0 : (205, 193, 180),
     2 : (238, 228, 218),
@@ -46,11 +52,40 @@ cell_colors = {
 }
 # for the individual tile colors we should probably use a dict to retrieve them.
 
-# set up text blocks to display
-myfont = pg.font.SysFont('Ubuntu Light', 50)
-title_surface = myfont.render('2048 clone', False, (0, 0, 0))
-instructions_surface = myfont.render('Use arrow keys to play.', False, (0, 0, 0))
+### MENU ###
 
+# set up menu text
+menufont = pg.font.SysFont('Arial', 50)
+text_surface = menufont.render('Click anywhere or press space bar to start', False, dark_color)
+
+waiting = True 
+while waiting:
+
+    for event in pg.event.get():
+        if event.type == KEYDOWN:
+            if event.key == K_SPACE:
+                waiting = False
+        elif event.type == MOUSEBUTTONDOWN:
+            mouse_presses = pg.mouse.get_pressed()
+            if mouse_presses[0]:    #left mouse button
+                waiting = False
+
+    # Fill the background with off-white
+    screen.fill(light_color)
+
+    # Add text
+    screen.blit(text_surface, (SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
+
+    pg.display.flip()
+
+
+
+### GAME LOOP ###
+
+# set up text blocks to display
+gamefont = pg.font.SysFont('Arial', 50)
+title_surface = gamefont.render('2048 clone', False, (0, 0, 0))
+instructions_surface = gamefont.render('Use arrow keys to play.', False, (0, 0, 0))
 
 # Run until the user asks to quit
 running = True
@@ -75,7 +110,7 @@ while running:
             running = False
 
     # Fill the background with off-white
-    screen.fill((249, 246, 242))
+    screen.fill(light_color)
 
     # Draw text blocks
     screen.blit(title_surface, (CELL_WIDTH, CELL_WIDTH/2))
@@ -95,10 +130,10 @@ while running:
             pg.draw.rect(screen, cell_colors[cell_value], (x, y, CELL_WIDTH, CELL_WIDTH), 0, 5)
             if cell_value != 0:
                 if cell_value <= 4:
-                    num_color = (119, 110, 101) #dark color
+                    num_color = dark_color
                 else:
-                    num_color = (249, 246, 242) #light color
-                number = myfont.render(str(cell_value), False, num_color)
+                    num_color = light_color
+                number = gamefont.render(str(cell_value), False, num_color)
                 screen.blit(number, (x, y))
 
 
