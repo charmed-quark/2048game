@@ -7,6 +7,7 @@ from pygame.locals import (
     K_LEFT,
     K_RIGHT,
     K_ESCAPE,
+    K_q,
     KEYDOWN,
     QUIT,
 )
@@ -29,7 +30,6 @@ pg.display.set_caption('2048 clone')
 
 ### COLORS ###
 grid_color = (187, 173, 160)
-empty_cell_color = (205, 193, 180)
 cell_colors = {
     0 : (205, 193, 180),
     2 : (238, 228, 218),
@@ -92,9 +92,13 @@ while running:
         for col in range(GRID_SIZE):
             x += increment
             cell_value = game.game_grid[row][col]
-            cell_surface = myfont.render(str(cell_value), False, (0, 0, 0))
+            if cell_value <= 4:
+                num_color = (119, 110, 101) #dark color
+            else:
+                num_color = (249, 246, 242) #light color
+            number = myfont.render(str(cell_value), False, num_color)
             pg.draw.rect(screen, cell_colors[cell_value], (x, y, CELL_WIDTH, CELL_WIDTH), 0, 5)
-            screen.blit(cell_surface, (x,y))
+            screen.blit(number, (x,y))
 
 
     # Flip the display (refreshes)
