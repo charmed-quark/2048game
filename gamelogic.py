@@ -1,12 +1,21 @@
-#import sys, pygame as pg, random
 import sys, random
-from gridmoves import Moves
-#pg.init()
+#from gridmoves import Moves
+
+from gridmoves import (
+    move_left,
+    move_right,
+    move_up,
+    move_down,
+    compress_list,
+    compress_list_and_pad,
+    merge_left,
+    merge_right,
+)
 
 class GameLogic:
 
     #allows us to use the moving functionality
-    moves = Moves()
+    #moves = Moves()
 
     def __init__(self, grid_size, target_score):
         self.GRID_SIZE = grid_size
@@ -42,10 +51,10 @@ class GameLogic:
     If it's possible to make a move that changes the game state, we can keep going.
     """
     def check_loss(self):
-        if  GameLogic.moves.move_left(self.game_grid) == self.game_grid and \
-            GameLogic.moves.move_right(self.game_grid) == self.game_grid and \
-            GameLogic.moves.move_up(self.game_grid) == self.game_grid and \
-            GameLogic.moves.move_down(self.game_grid) == self.game_grid:
+        if  move_left(self.game_grid) == self.game_grid and \
+            move_right(self.game_grid) == self.game_grid and \
+            move_up(self.game_grid) == self.game_grid and \
+            move_down(self.game_grid) == self.game_grid:
                 self.game_over = True
                 print("You lose!")
                 sys.exit()
@@ -68,13 +77,13 @@ class GameLogic:
 
         old_state = self.game_grid
         if move == "left":
-            self.game_grid = GameLogic.moves.move_left(self.game_grid)
+            self.game_grid = move_left(self.game_grid)
         elif move == "right":
-            self.game_grid = GameLogic.moves.move_right(self.game_grid)
+            self.game_grid = move_right(self.game_grid)
         elif move == "up":
-            self.game_grid = GameLogic.moves.move_up(self.game_grid)
+            self.game_grid = move_up(self.game_grid)
         elif move == "down":
-            self.game_grid = GameLogic.moves.move_down(self.game_grid)
+            self.game_grid = move_down(self.game_grid)
         elif move == "quit":  #quit
             sys.exit()
         
