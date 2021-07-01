@@ -40,19 +40,21 @@ instructions_surface = myfont.render('Use arrow keys to play.', False, (0, 0, 0)
 
 # Run until the user asks to quit
 running = True
+game.gameloop()
+
 while running:
 
     for event in pg.event.get():
         # Did the user hit a key?
         if event.type == KEYDOWN:
             if event.key == K_LEFT:
-                #game_grid = move_left(game_grid)
+                game.set_next_move("left")
             elif event.key == K_RIGHT:
-                #game_grid = move_right(game_grid)
+                game.set_next_move("right")
             elif event.key == K_UP:
-                #game_grid = move_up(game_grid)
+                game.set_next_move("up")
             elif event.key == K_DOWN:
-                #game_grid = move_down(game_grid)
+                game.set_next_move("down")
             elif event.key == K_q or event.key == K_ESCAPE:  #quit
                 running = False
         # Did the user click the window close button? If so, stop the loop.
