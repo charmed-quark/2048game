@@ -30,6 +30,20 @@ pg.display.set_caption('2048 clone')
 ### COLORS ###
 grid_color = (187, 173, 160)
 empty_cell_color = (205, 193, 180)
+cell_colors = {
+    0 : (205, 193, 180),
+    2 : (238, 228, 218),
+    4 : (238, 225, 201),
+    8 : (243, 178, 122),
+    16 : (246, 150, 100),
+    32 : (247, 124, 95),
+    64 : (247, 95, 59),
+    128 : (205, 193, 180),
+    256 : (237, 204, 98),
+    512 : (205, 193, 180),
+    1024 : (205, 193, 180),
+    2048 : (205, 193, 180),
+}
 # for the individual tile colors we should probably use a dict to retrieve them.
 
 # set up text blocks to display
@@ -79,7 +93,7 @@ while running:
             x += increment
             cell_value = game.game_grid[row][col]
             cell_surface = myfont.render(str(cell_value), False, (0, 0, 0))
-            pg.draw.rect(screen, empty_cell_color, (x, y, CELL_WIDTH, CELL_WIDTH), 0, 5)
+            pg.draw.rect(screen, cell_colors[cell_value], (x, y, CELL_WIDTH, CELL_WIDTH), 0, 5)
             screen.blit(cell_surface, (x,y))
 
 
