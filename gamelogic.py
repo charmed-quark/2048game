@@ -15,8 +15,6 @@ class GameLogic:
         self.game_won = False
         self.game_grid = [[0 for x in range(self.GRID_SIZE)] for y in range(self.GRID_SIZE)]
         self.empty_cells = [(x, y) for x in range(self.GRID_SIZE) for y in range(self.GRID_SIZE)]
-        self.next_move = None
-        self.waiting_for_move = True
         self.spawn_on_next_turn = True
         self.legal_moves = ["left", "right", "up", "down", "quit"]
 
@@ -63,19 +61,8 @@ class GameLogic:
             val = 2
 
         # retrieve a random cell from the list of empty cells, and put the new tile there
-        row, col = self.empty_cells[random.randrange(len(self.empty_cells))]  #only reading so we don't need to declare global
+        row, col = self.empty_cells[random.randrange(len(self.empty_cells))] 
         self.game_grid[row][col] = val
-
-    """
-    Called externally by logic instance to get user input
-    """
-    def set_next_move(self, move):
-        #self.waiting_for_move = False
-        if move in self.legal_moves:
-            self.next_move = move
-        else:
-            raise ValueError("No you can't do that!!!!!!!!!!!!")
-
 
     def turn(self, move):
         #spawn_on_next_turn = True
@@ -83,8 +70,6 @@ class GameLogic:
         #print(self.game_grid)
 
         #while True:
-        if self.spawn_on_next_turn:
-            self.spawn_tile()
 
         # command line version
         #move = input()
@@ -113,6 +98,9 @@ class GameLogic:
                     self.empty_cells.append((row, col))
                 elif self.game_grid[row][col] != 0 and (row, col) in self.empty_cells:
                     self.empty_cells.remove((row, col))
+        
+        if self.spawn_on_next_turn:
+            self.spawn_tile()
 
         # draw here
         for row in self.game_grid:
@@ -123,4 +111,6 @@ class GameLogic:
             self.check_loss()
 
         self.check_win()
+        if self.spawn_on_next_turn:
+            print("set to spawn on the next turn:))")
         #self.waiting_for_move = True

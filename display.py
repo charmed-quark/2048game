@@ -92,13 +92,14 @@ while running:
         for col in range(GRID_SIZE):
             x += increment
             cell_value = game.game_grid[row][col]
-            if cell_value <= 4:
-                num_color = (119, 110, 101) #dark color
-            else:
-                num_color = (249, 246, 242) #light color
-            number = myfont.render(str(cell_value), False, num_color)
             pg.draw.rect(screen, cell_colors[cell_value], (x, y, CELL_WIDTH, CELL_WIDTH), 0, 5)
-            screen.blit(number, (x,y))
+            if cell_value != 0:
+                if cell_value <= 4:
+                    num_color = (119, 110, 101) #dark color
+                else:
+                    num_color = (249, 246, 242) #light color
+                number = myfont.render(str(cell_value), False, num_color)
+                screen.blit(number, (x,y))
 
 
     # Flip the display (refreshes)
