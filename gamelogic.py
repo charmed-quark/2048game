@@ -89,11 +89,11 @@ class GameLogic:
                 elif self.game_grid[row][col] != 0 and (row, col) in self.empty_cells:
                     self.empty_cells.remove((row, col))
         
-        if old_state == self.game_grid:
+        if old_state != self.game_grid:
+            self.spawn_tile()
+        else:
             # if the move has no effect, then don't spawn a new tile
             print("This move is DANGEROUS AND ILLEGAL")
-        else:
-            self.spawn_tile()
 
         # draw here
         for row in self.game_grid:

@@ -22,7 +22,7 @@ pg.font.init()
 
 ### CONFIGS ###
 
-GRID_SIZE = 2
+GRID_SIZE = 3
 CELL_WIDTH = 100
 CELL_DISTANCE = 10
 GRID_WIDTH = CELL_WIDTH*GRID_SIZE + CELL_DISTANCE*(GRID_SIZE+1)
@@ -74,7 +74,8 @@ instructions_surface = gamefont.render('Use arrow keys to play. Press Q to quit.
 overlay = pg.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
 overlay.fill(light_color)
 overlay.set_alpha(100)
-overlay_text = gamefont.render('Oof. U to to undo, Q to quit.', True, (0, 0, 0))
+text_loss = gamefont.render('Oof. U to to undo, Q to quit.', True, (0, 0, 0))
+text_win = gamefont.render('You win! Press any key to keep playing, or R to restart.', True, (0, 0, 0))
 
 ### DRAWING FUNCTIONS ###
 
@@ -118,7 +119,7 @@ def draw_game():
 in_game = True
 while in_game:
 
-    game = GameLogic(GRID_SIZE, 2048)
+    game = GameLogic(GRID_SIZE, 32)
     
     ### MENU ###
 
@@ -144,6 +145,7 @@ while in_game:
 
     # Run until the user asks to quit
     running = True
+    win_confirmed = False
     game.spawn_tile()
     # Deque should be O(1) in both directions and automatically remove items from opposite end when full
     prev_states = deque(maxlen=3)
@@ -187,7 +189,7 @@ while in_game:
 
         if game.game_over:
             screen.blit(overlay, (0,0))
-            screen.blit(overlay_text, overlay_text.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)))
+            screen.blit(text_loss, text_loss.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)))
             pg.display.flip()
             waiting = True
 
@@ -200,11 +202,26 @@ while in_game:
                             #draw_game()
                         elif event.key == K_q:
                             waiting, running = False, False
+        
+        if not win_confirmed and game.game_won:
+            screen.blit(overlay, (0,0))
+            screen.blit(text_win, text_win.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)))
+            pg.display.flip()
+            waiting, win_confirmed = True, True
+            
+            while waiting:
+                for event in pg.event.get():
+                    if event.type == KEYDOWN:
+                        if event.key == K_r:
+                            waiting, running = False, False
+                        else:
+                            waiting = False
+
 
     ### LOSING SCREEN ###
     waiting = True
     while waiting and in_game:
-        line1 = menufont.render('You lose :(', True, dark_color)
+        #line1 = menufont.render('You lose :(', True, dark_color)
         line2 = menufont.render('Press R to restart or Q/ESC to quit', True, dark_color)
 
         for event in pg.event.get():
@@ -221,7 +238,7 @@ while in_game:
                 in_game = False
 
         screen.fill(light_color)        
-        screen.blit(line1, (10, 10))
+        #screen.blit(line1, (10, 10))
         screen.blit(line2, (10, 50))
 
         pg.display.flip()
