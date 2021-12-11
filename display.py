@@ -22,7 +22,7 @@ pg.font.init()
 
 ### CONFIGS ###
 
-GRID_SIZE = 4
+GRID_SIZE = 2
 CELL_WIDTH = 100
 CELL_DISTANCE = 10
 GRID_WIDTH = CELL_WIDTH*GRID_SIZE + CELL_DISTANCE*(GRID_SIZE+1)
@@ -71,6 +71,11 @@ blockfont = pg.font.SysFont('UbuntuMono-R', 50)
 title_surface = gamefont.render('2048 clone', True, (0, 0, 0))
 instructions_surface = gamefont.render('Use arrow keys to play. Press Q to quit.', True, (0, 0, 0))
 
+overlay = pg.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+overlay.fill(light_color)
+overlay.set_alpha(100)
+overlay_text = gamefont.render('Oof. U to to undo, Q to quit.', True, (0, 0, 0))
+
 ### DRAWING FUNCTIONS ###
 
 def draw_menu():
@@ -79,34 +84,36 @@ def draw_menu():
     pg.display.flip()
 
 def draw_game():
-        screen.fill(light_color)
-        screen.blit(title_surface, (CELL_WIDTH, CELL_WIDTH/2))
-        screen.blit(instructions_surface, (CELL_WIDTH, (SCREEN_WIDTH - CELL_WIDTH/2)))
+    screen.fill(light_color)
+    screen.blit(title_surface, (CELL_WIDTH, CELL_WIDTH/2))
+    screen.blit(instructions_surface, (CELL_WIDTH, (SCREEN_WIDTH - CELL_WIDTH/2)))
 
-        # Draw grid. The final argument makes the corners rounded.
-        pg.draw.rect(screen, grid_color, (CELL_WIDTH, CELL_WIDTH, GRID_WIDTH, GRID_WIDTH), 0, 10)
+    # Draw grid. The final argument makes the corners rounded.
+    pg.draw.rect(screen, grid_color, (CELL_WIDTH, CELL_WIDTH, GRID_WIDTH, GRID_WIDTH), 0, 10)
 
-        # Draw each cell.
-        increment = CELL_WIDTH + CELL_DISTANCE
-        for row in range(GRID_SIZE):
-            x = 0
-            y = increment + row*increment
-            for col in range(GRID_SIZE):
-                x += increment
-                cell_value = game.game_grid[row][col]
-                pg.draw.rect(screen, cell_colors[cell_value], (x, y, CELL_WIDTH, CELL_WIDTH), 0, 5)
-                if cell_value != 0:
-                    if cell_value <= 4:
-                        num_color = dark_color
-                    else:
-                        num_color = light_color
-                    number = blockfont.render(str(cell_value), True, num_color)
-                    num_rect = number.get_rect(center=(x+(CELL_WIDTH//2), y+(CELL_WIDTH//2)))
-                    screen.blit(number, num_rect)
+    # Draw each cell.
+    increment = CELL_WIDTH + CELL_DISTANCE
+    for row in range(GRID_SIZE):
+        x = 0
+        y = increment + row*increment
+        for col in range(GRID_SIZE):
+            x += increment
+            cell_value = game.game_grid[row][col]
+            pg.draw.rect(screen, cell_colors[cell_value], (x, y, CELL_WIDTH, CELL_WIDTH), 0, 5)
+            if cell_value != 0:
+                if cell_value <= 4:
+                    num_color = dark_color
+                else:
+                    num_color = light_color
+                number = blockfont.render(str(cell_value), True, num_color)
+                num_rect = number.get_rect(center=(x+(CELL_WIDTH//2), y+(CELL_WIDTH//2)))
+                screen.blit(number, num_rect)
 
-        # Flip the display (refreshes)
-        pg.display.flip()
+    # Flip the display (refreshes)
+    pg.display.flip()
 
+
+### GAME LOOP ###
 
 in_game = True
 while in_game:
@@ -132,7 +139,8 @@ while in_game:
 
         draw_menu()
 
-    ### GAME LOOP ###
+
+    ### MAIN GAME ###
 
     # Run until the user asks to quit
     running = True
@@ -140,7 +148,7 @@ while in_game:
     # Deque should be O(1) in both directions and automatically remove items from opposite end when full
     prev_states = deque(maxlen=3)
 
-    while running and not game.game_over:
+    while running:
 
         old_state = game.game_grid
 
@@ -164,6 +172,7 @@ while in_game:
                         save_next = False
                         # If we've used undo, we do not want to save the resulting state
                         # because we will get caught in a loop.
+                        print("Undoing move.")
                 elif event.key == K_q or event.key == K_ESCAPE:  #quit
                     running = False
 
@@ -175,6 +184,22 @@ while in_game:
                 running = False
 
         draw_game()
+
+        if game.game_over:
+            screen.blit(overlay, (0,0))
+            screen.blit(overlay_text, overlay_text.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)))
+            pg.display.flip()
+            waiting = True
+
+            while waiting:
+                for event in pg.event.get():
+                    if event.type == KEYDOWN:
+                        if event.key == K_u:
+                            game.game_grid = prev_states.pop()
+                            waiting, game.game_over = False, False
+                            #draw_game()
+                        elif event.key == K_q:
+                            waiting, running = False, False
 
     ### LOSING SCREEN ###
     waiting = True
