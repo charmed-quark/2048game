@@ -9,6 +9,7 @@ from pygame.locals import (
     K_RIGHT,
     K_ESCAPE,
     K_SPACE,
+    K_m,
     K_r,
     K_q,
     K_u,
@@ -117,14 +118,14 @@ def draw_game():
 ### GAME LOOP ###
 
 in_game = True
-restart_on_win = False
+skip_menu = False
 while in_game:
 
     game = GameLogic(GRID_SIZE, 32)
     
     ### MENU ###
 
-    if not restart_on_win:  # only show the menu when we first open the game
+    if not skip_menu:  # only show the menu when we first open the game
         waiting = True 
         while waiting and in_game:  #hot fix. should be improved both her and in game loop
 
@@ -176,6 +177,10 @@ while in_game:
                         # If we've used undo, we do not want to save the resulting state
                         # because we will get caught in a loop.
                         print("Undoing move.")
+                elif event.key == K_m:  # return to main menu
+                    running, skip_menu = False, False
+                elif event.key == K_r:  # restart
+                    running, skip_menu = False, True
                 elif event.key == K_q or event.key == K_ESCAPE:  #quit
                     running, in_game = False, False
 
@@ -208,7 +213,7 @@ while in_game:
             screen.blit(overlay, (0,0))
             screen.blit(text_win, text_win.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)))
             pg.display.flip()
-            waiting, win_confirmed, restart_on_win = True, True, True
+            waiting, win_confirmed, skip_menu = True, True, True
             
             while waiting:
                 for event in pg.event.get():
