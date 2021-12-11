@@ -22,7 +22,7 @@ pg.font.init()
 
 ### CONFIGS ###
 
-GRID_SIZE = 4
+GRID_SIZE = 2
 CELL_WIDTH = 100
 CELL_DISTANCE = 10
 GRID_WIDTH = CELL_WIDTH*GRID_SIZE + CELL_DISTANCE*(GRID_SIZE+1)
@@ -63,7 +63,7 @@ while in_game:
     # set up menu text
     # potentially move all text config to beginning so it's only done once.
     menufont = pg.font.SysFont('Arial', 20)
-    text_surface = menufont.render('Click anywhere or press space bar to start', False, dark_color)
+    text_surface = menufont.render('Click anywhere or press space bar to start', True, dark_color)
 
     waiting = True 
     while waiting and in_game:  #hot fix. should be improved both her and in game loop
@@ -94,8 +94,8 @@ while in_game:
     # set up text blocks to display
     gamefont = pg.font.SysFont('Arial', 25)
     blockfont = pg.font.SysFont('UbuntuMono-R', 50)
-    title_surface = gamefont.render('2048 clone', False, (0, 0, 0))
-    instructions_surface = gamefont.render('Use arrow keys to play. Press Q to quit.', False, (0, 0, 0))
+    title_surface = gamefont.render('2048 clone', True, (0, 0, 0))
+    instructions_surface = gamefont.render('Use arrow keys to play. Press Q to quit.', True, (0, 0, 0))
 
     # Run until the user asks to quit
     running = True
@@ -164,7 +164,7 @@ while in_game:
                         num_color = dark_color
                     else:
                         num_color = light_color
-                    number = blockfont.render(str(cell_value), False, num_color)
+                    number = blockfont.render(str(cell_value), True, num_color)
                     screen.blit(number, (x, y))
 
         # Flip the display (refreshes)
@@ -174,8 +174,8 @@ while in_game:
     ### LOSING SCREEN ###
     waiting = True
     while waiting and in_game:
-        line1 = menufont.render('You lose :(', False, dark_color)
-        line2 = menufont.render('Press R to restart or Q/ESC to quit', False, dark_color)
+        line1 = menufont.render('You lose :(', True, dark_color)
+        line2 = menufont.render('Press R to restart or Q/ESC to quit', True, dark_color)
 
         for event in pg.event.get():
             # Did the user hit a key?
