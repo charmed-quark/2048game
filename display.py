@@ -31,7 +31,7 @@ SCREEN_WIDTH = GRID_WIDTH + 2*CELL_WIDTH
 SCREEN_HEIGHT = SCREEN_WIDTH
 
 # Game object
-game = GameLogic(GRID_SIZE, 32)
+game = GameLogic(GRID_SIZE, 8)
 
 # Set up the drawing window and window name
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -41,6 +41,7 @@ pg.display.set_caption('2048 clone')
 grid_color = (187, 173, 160)
 dark_color = (119, 110, 101)
 light_color = (249, 246, 242)
+black = (0,0,0)
 cell_colors = {
     0 : (205, 193, 180),
     2 : (238, 228, 218),
@@ -66,19 +67,27 @@ cell_colors = {
 
 # MENU
 menufont = pg.font.SysFont('Arial', 20)
-text_surface = menufont.render('Click anywhere or press space bar to start', True, dark_color)
+text_surface = menufont.render('Press space bar to start', True, dark_color)
 
 # IN-GAME
 gamefont = pg.font.SysFont('Arial', 25)
 blockfont = pg.font.SysFont('UbuntuMono-R', 50)
-title_surface = gamefont.render('2048 clone', True, (0, 0, 0))
-instructions_surface = gamefont.render('Use arrow keys to play. Press Q to quit.', True, (0, 0, 0))
+title = gamefont.render('2048 clone', True, black)
+instructions = gamefont.render('Use arrow keys to play. Press Q to quit.', True, black)
 
+# END-OF-GAME
 overlay = pg.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
 overlay.fill(light_color)
-overlay.set_alpha(100)
-text_loss = gamefont.render('Oof. U to to undo, Q to quit.', True, (0, 0, 0))
-text_win = gamefont.render('You win! Press any key to keep playing, or R to restart.', True, (0, 0, 0))
+overlay.set_alpha(150)
+
+text_loss = gamefont.render('Oof.', True, black)
+text_win = gamefont.render('You win! Press any key to keep playing.', True, black)
+text_options = gamefont.render('Options: ', True, black)
+text_undo = gamefont.render('U: undo.', True, black)
+text_restart = gamefont.render('R: restart.', True, black)
+text_menu = gamefont.render('M: menu.', True, black)
+text_quit = gamefont.render('Q: quit.', True, black)
+
 
 ### DRAWING FUNCTIONS ###
 
@@ -89,11 +98,11 @@ def draw_menu():
 
 def draw_game():
     screen.fill(light_color)
-    screen.blit(title_surface, (CELL_WIDTH, CELL_WIDTH/2))
-    screen.blit(instructions_surface, (CELL_WIDTH, (SCREEN_WIDTH - CELL_WIDTH/2)))
+    screen.blit(title, (CELL_WIDTH, CELL_WIDTH/2))
+    screen.blit(instructions, ((SCREEN_WIDTH - instructions.get_width())//2, (SCREEN_HEIGHT - CELL_WIDTH/2)))
 
-    score_surface = gamefont.render(str(game.score), True, (0, 0, 0))
-    screen.blit(score_surface, ((SCREEN_WIDTH-score_surface.get_width()), CELL_WIDTH/2))
+    score_surface = gamefont.render("Score: " + str(game.score), True, black)
+    screen.blit(score_surface, ((SCREEN_WIDTH-(CELL_WIDTH+score_surface.get_width())), CELL_WIDTH/2))
 
     # Draw grid. The final argument makes the corners rounded.
     pg.draw.rect(screen, grid_color, (CELL_WIDTH, CELL_WIDTH, GRID_WIDTH, GRID_WIDTH), 0, 10)
@@ -119,6 +128,10 @@ def draw_game():
     # Flip the display (refreshes)
     pg.display.flip()
 
+# Render multiple lines of text directly beneath one another.
+def textrender(lines):
+    for i, line in enumerate(lines):
+        screen.blit(line, (CELL_WIDTH//2, CELL_WIDTH+line.get_height()*i))
 
 ### GAME LOOP ###
 
@@ -130,7 +143,7 @@ while in_game:
     
     ### MENU ###
 
-    if not skip_menu:  # only show the menu when we first open the game
+    if not skip_menu: 
         waiting = True 
         while waiting and in_game:  #hot fix. should be improved both her and in game loop
 
@@ -140,10 +153,6 @@ while in_game:
                         waiting = False
                 elif event.type == QUIT:
                     waiting, in_game = False, False 
-                elif event.type == MOUSEBUTTONDOWN:
-                    mouse_presses = pg.mouse.get_pressed()
-                    if mouse_presses[0]:    #left mouse button
-                        waiting = False
 
             draw_menu()
 
@@ -186,7 +195,7 @@ while in_game:
                     running, skip_menu = False, False
                 elif event.key == K_r:  # restart
                     running, skip_menu = False, True
-                elif event.key == K_q or event.key == K_ESCAPE:  #quit
+                elif event.key == K_q:  #quit
                     running, in_game = False, False
 
                 if save_next:
@@ -200,7 +209,7 @@ while in_game:
 
         if game.game_over:
             screen.blit(overlay, (0,0))
-            screen.blit(text_loss, text_loss.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)))
+            textrender([text_loss, text_options, text_undo, text_restart, text_menu, text_quit])
             pg.display.flip()
             waiting = True
 
@@ -210,21 +219,29 @@ while in_game:
                         if event.key == K_u:
                             game.game_grid = prev_states.pop()
                             waiting, game.game_over = False, False
-                            #draw_game()
+                            # something's wrong with this one I think.
+                        elif event.key == K_m:  # return to main menu
+                            waiting, running, skip_menu = False, False, False
+                        elif event.key == K_r:  # restart
+                            waiting, running, skip_menu = False, False, True
                         elif event.key == K_q:
-                            waiting, running = False, False
+                            waiting, running, in_game = False, False, False
         
         if not win_confirmed and game.game_won:
             screen.blit(overlay, (0,0))
-            screen.blit(text_win, text_win.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)))
+            textrender([text_win, text_options, text_restart, text_menu, text_quit])
             pg.display.flip()
-            waiting, win_confirmed, skip_menu = True, True, True
+            waiting, win_confirmed = True, True
             
             while waiting:
                 for event in pg.event.get():
                     if event.type == KEYDOWN:
-                        if event.key == K_r:
-                            waiting, running = False, False
+                        if event.key == K_m:  # return to main menu
+                            waiting, running, skip_menu = False, False, False
+                        elif event.key == K_r:
+                            waiting, running, skip_menu = False, False, True
+                        elif event.key == K_q:
+                            waiting, running, in_game = False, False, False
                         else:
                             waiting = False
 
