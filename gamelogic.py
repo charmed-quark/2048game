@@ -1,5 +1,6 @@
 import sys, random
 from collections import Counter
+from itertools import chain
 
 from gridmoves import (
     move_left,
@@ -40,11 +41,8 @@ class GameLogic:
     Checks if the target score has been attained. If yes, the game is won.
     """
     def check_win(self):
-        for row in self.game_grid:
-            if self.TARGET_SCORE in row:
-                self.game_won = True
-                print("You win! :D  You can keep playing though!")
-                break 
+        if self.TARGET_SCORE in list(set(chain(*self.game_grid))):
+            self.game_won = True
 
     """
     This should only be run when the board is FULL, otherwise there are always
