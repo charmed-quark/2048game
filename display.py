@@ -110,7 +110,7 @@ while in_game:
 
         for event in pg.event.get():
 
-            save_next = True
+            save_next = True    # Tracking old states for undo purposes
 
             # Did the user hit a key?
             if event.type == KEYDOWN:
@@ -124,18 +124,16 @@ while in_game:
                     game.turn("down")
                 elif event.key == K_u:  # undo previous move
                     if prev_states and prev_states[-1] != game.game_grid:
-                        print("kjkjfglkdfjhlkfdjh")
                         game.game_grid = prev_states.pop()
                         save_next = False
+                        # If we've used undo, we do not want to save the resulting state
+                        # because we will get caught in a loop.
                 elif event.key == K_q or event.key == K_ESCAPE:  #quit
                     running = False
 
                 if save_next:
                     if not prev_states or (prev_states and prev_states[-1] != game.game_grid):
                         prev_states.append(old_state)
-                        print("Current state of prevstate list: ")
-                        for item in prev_states:
-                            print(str(item))
             # Did the user click the window close button? If so, stop the loop.
             elif event.type == QUIT:
                 running = False
