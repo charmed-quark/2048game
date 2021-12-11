@@ -46,12 +46,73 @@ cell_colors = {
     16 : (246, 150, 100),
     32 : (247, 124, 95),
     64 : (247, 95, 59),
-    128 : (205, 193, 180),
+    128 : (243, 217, 107),
     256 : (237, 204, 98),
-    512 : (205, 193, 180),
-    1024 : (205, 193, 180),
-    2048 : (205, 193, 180),
+    512 : (229, 192, 42),
+    1024 : (227, 186, 20),
+    2048 : (49, 100, 92),
+    4096 : (247, 100, 116),
+    8192 : (241, 75, 97),
+    16384 : (235, 66, 63),
+    32768 : (108, 183, 214),
+    65536 : (93, 161, 226),
+    131072 : (0, 127, 194),
 }
+
+### TEXT BLOCKS ###
+
+# MENU
+menufont = pg.font.SysFont('Arial', 20)
+text_surface = menufont.render('Click anywhere or press space bar to start', True, dark_color)
+
+# IN-GAME
+gamefont = pg.font.SysFont('Arial', 25)
+blockfont = pg.font.SysFont('UbuntuMono-R', 50)
+title_surface = gamefont.render('2048 clone', True, (0, 0, 0))
+instructions_surface = gamefont.render('Use arrow keys to play. Press Q to quit.', True, (0, 0, 0))
+
+def draw_menu():
+    # Fill the background with off-white
+    screen.fill(light_color)
+
+    # Add text
+    screen.blit(text_surface, (10, 10))
+
+    pg.display.flip()
+
+def draw_game():
+        # Fill the background with off-white
+        screen.fill(light_color)
+
+        # Draw text blocks
+        screen.blit(title_surface, (CELL_WIDTH, CELL_WIDTH/2))
+        screen.blit(instructions_surface, (CELL_WIDTH, (SCREEN_WIDTH - CELL_WIDTH/2)))
+
+        # Draw grid. The final argument makes the corners rounded.
+        pg.draw.rect(screen, grid_color, (CELL_WIDTH, CELL_WIDTH, GRID_WIDTH, GRID_WIDTH), 0, 10)
+
+        # Draw each cell.
+        increment = CELL_WIDTH + CELL_DISTANCE
+        for row in range(GRID_SIZE):
+            x = 0
+            y = increment + row*increment
+            for col in range(GRID_SIZE):
+                x += increment
+                cell_value = game.game_grid[row][col]
+                pg.draw.rect(screen, cell_colors[cell_value], (x, y, CELL_WIDTH, CELL_WIDTH), 0, 5)
+                if cell_value != 0:
+                    if cell_value <= 4:
+                        num_color = dark_color
+                    else:
+                        num_color = light_color
+                    number = blockfont.render(str(cell_value), True, num_color)
+                    num_rect = number.get_rect(center=(x+(CELL_WIDTH//2), y+(CELL_WIDTH//2)))
+                    screen.blit(number, num_rect)
+
+        # Flip the display (refreshes)
+        pg.display.flip()
+
+
 
 in_game = True
 while in_game:
@@ -59,11 +120,6 @@ while in_game:
     game = GameLogic(GRID_SIZE, 2048)
     
     ### MENU ###
-
-    # set up menu text
-    # potentially move all text config to beginning so it's only done once.
-    menufont = pg.font.SysFont('Arial', 20)
-    text_surface = menufont.render('Click anywhere or press space bar to start', True, dark_color)
 
     waiting = True 
     while waiting and in_game:  #hot fix. should be improved both her and in game loop
@@ -80,22 +136,11 @@ while in_game:
                 waiting = False 
                 in_game = False
 
-        # Fill the background with off-white
-        screen.fill(light_color)
-
-        # Add text
-        screen.blit(text_surface, (10, 10))
-
-        pg.display.flip()
-
+        draw_menu()
 
     ### GAME LOOP ###
 
     # set up text blocks to display
-    gamefont = pg.font.SysFont('Arial', 25)
-    blockfont = pg.font.SysFont('UbuntuMono-R', 50)
-    title_surface = gamefont.render('2048 clone', True, (0, 0, 0))
-    instructions_surface = gamefont.render('Use arrow keys to play. Press Q to quit.', True, (0, 0, 0))
 
     # Run until the user asks to quit
     running = True
@@ -138,37 +183,7 @@ while in_game:
             elif event.type == QUIT:
                 running = False
 
-        # Fill the background with off-white
-        screen.fill(light_color)
-
-        # Draw text blocks
-        screen.blit(title_surface, (CELL_WIDTH, CELL_WIDTH/2))
-        screen.blit(instructions_surface, (CELL_WIDTH, (SCREEN_WIDTH - CELL_WIDTH/2)))
-
-        # Draw grid. The final argument makes the corners rounded.
-        pg.draw.rect(screen, grid_color, (CELL_WIDTH, CELL_WIDTH, GRID_WIDTH, GRID_WIDTH), 0, 10)
-
-        # Draw each cell.
-        increment = CELL_WIDTH + CELL_DISTANCE
-        for row in range(GRID_SIZE):
-            x = 0
-            y = increment + row*increment
-            for col in range(GRID_SIZE):
-                x += increment
-                cell_value = game.game_grid[row][col]
-                pg.draw.rect(screen, cell_colors[cell_value], (x, y, CELL_WIDTH, CELL_WIDTH), 0, 5)
-                if cell_value != 0:
-                    if cell_value <= 4:
-                        num_color = dark_color
-                    else:
-                        num_color = light_color
-                    number = blockfont.render(str(cell_value), True, num_color)
-                    num_rect = number.get_rect(center=(x+(CELL_WIDTH//2), y+(CELL_WIDTH//2)))
-                    screen.blit(number, num_rect)
-
-        # Flip the display (refreshes)
-        pg.display.flip()
-
+        draw_game()
 
     ### LOSING SCREEN ###
     waiting = True
