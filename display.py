@@ -30,6 +30,8 @@ GRID_WIDTH = CELL_WIDTH*GRID_SIZE + CELL_DISTANCE*(GRID_SIZE+1)
 SCREEN_WIDTH = GRID_WIDTH + 2*CELL_WIDTH
 SCREEN_HEIGHT = SCREEN_WIDTH
 
+# Game object
+game = GameLogic(GRID_SIZE, 32)
 
 # Set up the drawing window and window name
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -90,6 +92,9 @@ def draw_game():
     screen.blit(title_surface, (CELL_WIDTH, CELL_WIDTH/2))
     screen.blit(instructions_surface, (CELL_WIDTH, (SCREEN_WIDTH - CELL_WIDTH/2)))
 
+    score_surface = gamefont.render(str(game.score), True, (0, 0, 0))
+    screen.blit(score_surface, ((SCREEN_WIDTH-score_surface.get_width()), CELL_WIDTH/2))
+
     # Draw grid. The final argument makes the corners rounded.
     pg.draw.rect(screen, grid_color, (CELL_WIDTH, CELL_WIDTH, GRID_WIDTH, GRID_WIDTH), 0, 10)
 
@@ -121,7 +126,7 @@ in_game = True
 skip_menu = False
 while in_game:
 
-    game = GameLogic(GRID_SIZE, 32)
+    game.reset()
     
     ### MENU ###
 

@@ -1,4 +1,5 @@
 import sys, random
+from collections import Counter
 
 from gridmoves import (
     move_left,
@@ -25,6 +26,15 @@ class GameLogic:
         self.empty_cells = [(x, y) for x in range(self.GRID_SIZE) for y in range(self.GRID_SIZE)]
         self.spawn_on_next_turn = True
         self.legal_moves = ["left", "right", "up", "down", "quit"]
+        self.score = 0
+
+    def reset(self):
+        self.game_over = False
+        self.game_won = False
+        self.game_grid = [[0 for x in range(self.GRID_SIZE)] for y in range(self.GRID_SIZE)]
+        self.empty_cells = [(x, y) for x in range(self.GRID_SIZE) for y in range(self.GRID_SIZE)]
+        self.spawn_on_next_turn = True
+        self.score = 0
 
     """
     Checks if the target score has been attained. If yes, the game is won.
@@ -80,7 +90,6 @@ class GameLogic:
         elif move == "quit":  #quit
             sys.exit()
         
-
         # update the list of empty cells
         for row in range(self.GRID_SIZE):
             for col in range(self.GRID_SIZE):
@@ -90,6 +99,17 @@ class GameLogic:
                     self.empty_cells.remove((row, col))
         
         if old_state != self.game_grid:
+            # update the score before spawn.
+            # compare number of occurrences in current vs. previous state
+            # and update with the value of newly created tiles.
+            # I'm not entirely sure why this map thing works for the matrix but it does!!
+            c1 = sum(map(Counter, self.game_grid), Counter())
+            c2 = sum(map(Counter, old_state), Counter())
+            del c1[2], c2[2]
+            c1.subtract(c2)
+            for val in c1:
+                if c1[val] > 0:
+                    self.score += c1[val]*val
             self.spawn_tile()
         else:
             # if the move has no effect, then don't spawn a new tile
