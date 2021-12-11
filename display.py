@@ -71,20 +71,15 @@ blockfont = pg.font.SysFont('UbuntuMono-R', 50)
 title_surface = gamefont.render('2048 clone', True, (0, 0, 0))
 instructions_surface = gamefont.render('Use arrow keys to play. Press Q to quit.', True, (0, 0, 0))
 
+### DRAWING FUNCTIONS ###
+
 def draw_menu():
-    # Fill the background with off-white
     screen.fill(light_color)
-
-    # Add text
     screen.blit(text_surface, (10, 10))
-
     pg.display.flip()
 
 def draw_game():
-        # Fill the background with off-white
         screen.fill(light_color)
-
-        # Draw text blocks
         screen.blit(title_surface, (CELL_WIDTH, CELL_WIDTH/2))
         screen.blit(instructions_surface, (CELL_WIDTH, (SCREEN_WIDTH - CELL_WIDTH/2)))
 
@@ -113,7 +108,6 @@ def draw_game():
         pg.display.flip()
 
 
-
 in_game = True
 while in_game:
 
@@ -140,15 +134,12 @@ while in_game:
 
     ### GAME LOOP ###
 
-    # set up text blocks to display
-
     # Run until the user asks to quit
     running = True
     game.spawn_tile()
     # Deque should be O(1) in both directions and automatically remove items from opposite end when full
     prev_states = deque(maxlen=3)
-    #prev_states.append(game.game_grid)
-    #print("The previous state is currently...." + str(prev_states[0]))
+
     while running and not game.game_over:
 
         old_state = game.game_grid
