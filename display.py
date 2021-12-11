@@ -71,9 +71,11 @@ text_surface = menufont.render('Press space bar to start', True, dark_color)
 
 # IN-GAME
 gamefont = pg.font.SysFont('Arial', 25)
-blockfont = pg.font.SysFont('UbuntuMono-R', 50)
-title = gamefont.render('2048 clone', True, black)
-instructions = gamefont.render('Use arrow keys to play. Press Q to quit.', True, black)
+numfont_large = pg.font.SysFont('UbuntuMono-R', 50)
+numfont_medium = pg.font.SysFont('UbuntuMono-R', 40)
+numfont_small = pg.font.SysFont('UbuntuMono-R', 35)
+title = gamefont.render('2048 clone', True, dark_color)
+instructions = gamefont.render('Use arrow keys to play. Press Q to quit.', True, dark_color)
 
 # END-OF-GAME
 overlay = pg.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -97,11 +99,12 @@ def draw_menu():
     pg.display.flip()
 
 def draw_game():
+
+    # Draw background, title, instructions, and score.
     screen.fill(light_color)
+    score_surface = gamefont.render("Score: " + str(game.score), True, dark_color)
     screen.blit(title, (CELL_WIDTH, CELL_WIDTH/2))
     screen.blit(instructions, ((SCREEN_WIDTH - instructions.get_width())//2, (SCREEN_HEIGHT - CELL_WIDTH/2)))
-
-    score_surface = gamefont.render("Score: " + str(game.score), True, black)
     screen.blit(score_surface, ((SCREEN_WIDTH-(CELL_WIDTH+score_surface.get_width())), CELL_WIDTH/2))
 
     # Draw grid. The final argument makes the corners rounded.
@@ -121,6 +124,14 @@ def draw_game():
                     num_color = dark_color
                 else:
                     num_color = light_color
+
+                if cell_value > 99999:
+                    blockfont = numfont_small
+                elif cell_value > 9999:
+                    blockfont = numfont_medium
+                else:
+                    blockfont = numfont_large
+
                 number = blockfont.render(str(cell_value), True, num_color)
                 num_rect = number.get_rect(center=(x+(CELL_WIDTH//2), y+(CELL_WIDTH//2)))
                 screen.blit(number, num_rect)
@@ -151,6 +162,8 @@ while in_game:
                 if event.type == KEYDOWN:
                     if event.key == K_SPACE:
                         waiting = False
+                    elif event.key == K_q:
+                        waiting, in_game = False, False
                 elif event.type == QUIT:
                     waiting, in_game = False, False 
 

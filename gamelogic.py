@@ -108,9 +108,9 @@ class GameLogic:
             for val in c1:
                 if c1[val] > 0:
                     self.score += c1[val]*val
+            # the move had some effect, so we spawn a new tile.
             self.spawn_tile()
         else:
-            # if the move has no effect, then don't spawn a new tile
             print("This move is DANGEROUS AND ILLEGAL")
 
         # draw here
