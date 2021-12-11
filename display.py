@@ -1,5 +1,6 @@
 import pygame as pg 
 from gamelogic import GameLogic
+from collections import deque
 
 from pygame.locals import (
     K_UP,
@@ -10,6 +11,7 @@ from pygame.locals import (
     K_SPACE,
     K_r,
     K_q,
+    K_u,
     KEYDOWN,
     MOUSEBUTTONDOWN,
     QUIT,
@@ -20,7 +22,7 @@ pg.font.init()
 
 ### CONFIGS ###
 
-GRID_SIZE = 2
+GRID_SIZE = 4
 CELL_WIDTH = 100
 CELL_DISTANCE = 10
 GRID_WIDTH = CELL_WIDTH*GRID_SIZE + CELL_DISTANCE*(GRID_SIZE+1)
@@ -90,16 +92,26 @@ while in_game:
     ### GAME LOOP ###
 
     # set up text blocks to display
-    gamefont = pg.font.SysFont('Arial', 50)
+    gamefont = pg.font.SysFont('Arial', 25)
+    blockfont = pg.font.SysFont('UbuntuMono-R', 50)
     title_surface = gamefont.render('2048 clone', False, (0, 0, 0))
-    instructions_surface = gamefont.render('Use arrow keys to play.', False, (0, 0, 0))
+    instructions_surface = gamefont.render('Use arrow keys to play. Press Q to quit.', False, (0, 0, 0))
 
     # Run until the user asks to quit
     running = True
     game.spawn_tile()
+    # Deque should be O(1) in both directions and automatically remove items from opposite end when full
+    prev_states = deque(maxlen=3)
+    #prev_states.append(game.game_grid)
+    #print("The previous state is currently...." + str(prev_states[0]))
     while running and not game.game_over:
 
+        old_state = game.game_grid
+
         for event in pg.event.get():
+
+            save_next = True
+
             # Did the user hit a key?
             if event.type == KEYDOWN:
                 if event.key == K_LEFT:
@@ -110,8 +122,20 @@ while in_game:
                     game.turn("up")
                 elif event.key == K_DOWN:
                     game.turn("down")
+                elif event.key == K_u:  # undo previous move
+                    if prev_states and prev_states[-1] != game.game_grid:
+                        print("kjkjfglkdfjhlkfdjh")
+                        game.game_grid = prev_states.pop()
+                        save_next = False
                 elif event.key == K_q or event.key == K_ESCAPE:  #quit
                     running = False
+
+                if save_next:
+                    if not prev_states or (prev_states and prev_states[-1] != game.game_grid):
+                        prev_states.append(old_state)
+                        print("Current state of prevstate list: ")
+                        for item in prev_states:
+                            print(str(item))
             # Did the user click the window close button? If so, stop the loop.
             elif event.type == QUIT:
                 running = False
@@ -140,16 +164,14 @@ while in_game:
                         num_color = dark_color
                     else:
                         num_color = light_color
-                    number = gamefont.render(str(cell_value), False, num_color)
+                    number = blockfont.render(str(cell_value), False, num_color)
                     screen.blit(number, (x, y))
-
 
         # Flip the display (refreshes)
         pg.display.flip()
 
 
     ### LOSING SCREEN ###
-    # provide option to restart
     waiting = True
     while waiting and in_game:
         line1 = menufont.render('You lose :(', False, dark_color)
