@@ -22,7 +22,7 @@ pg.font.init()
 
 ### CONFIGS ###
 
-GRID_SIZE = 2
+GRID_SIZE = 4
 CELL_WIDTH = 100
 CELL_DISTANCE = 10
 GRID_WIDTH = CELL_WIDTH*GRID_SIZE + CELL_DISTANCE*(GRID_SIZE+1)
@@ -163,7 +163,8 @@ while in_game:
                     else:
                         num_color = light_color
                     number = blockfont.render(str(cell_value), True, num_color)
-                    screen.blit(number, (x, y))
+                    num_rect = number.get_rect(center=(x+(CELL_WIDTH//2), y+(CELL_WIDTH//2)))
+                    screen.blit(number, num_rect)
 
         # Flip the display (refreshes)
         pg.display.flip()
