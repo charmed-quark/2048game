@@ -117,28 +117,29 @@ def draw_game():
 ### GAME LOOP ###
 
 in_game = True
+restart_on_win = False
 while in_game:
 
     game = GameLogic(GRID_SIZE, 32)
     
     ### MENU ###
 
-    waiting = True 
-    while waiting and in_game:  #hot fix. should be improved both her and in game loop
+    if not restart_on_win:  # only show the menu when we first open the game
+        waiting = True 
+        while waiting and in_game:  #hot fix. should be improved both her and in game loop
 
-        for event in pg.event.get():
-            if event.type == KEYDOWN:
-                if event.key == K_SPACE:
-                    waiting = False
-            elif event.type == MOUSEBUTTONDOWN:
-                mouse_presses = pg.mouse.get_pressed()
-                if mouse_presses[0]:    #left mouse button
-                    waiting = False
-            elif event.type == QUIT:
-                waiting = False 
-                in_game = False
+            for event in pg.event.get():
+                if event.type == KEYDOWN:
+                    if event.key == K_SPACE:
+                        waiting = False
+                elif event.type == QUIT:
+                    waiting, in_game = False, False 
+                elif event.type == MOUSEBUTTONDOWN:
+                    mouse_presses = pg.mouse.get_pressed()
+                    if mouse_presses[0]:    #left mouse button
+                        waiting = False
 
-        draw_menu()
+            draw_menu()
 
 
     ### MAIN GAME ###
@@ -150,7 +151,7 @@ while in_game:
     # Deque should be O(1) in both directions and automatically remove items from opposite end when full
     prev_states = deque(maxlen=3)
 
-    while running:
+    while running and in_game:
 
         old_state = game.game_grid
 
@@ -176,14 +177,14 @@ while in_game:
                         # because we will get caught in a loop.
                         print("Undoing move.")
                 elif event.key == K_q or event.key == K_ESCAPE:  #quit
-                    running = False
+                    running, in_game = False, False
 
                 if save_next:
                     if not prev_states or (prev_states and prev_states[-1] != game.game_grid):
                         prev_states.append(old_state)
             # Did the user click the window close button? If so, stop the loop.
             elif event.type == QUIT:
-                running = False
+                running, in_game = False, False
 
         draw_game()
 
@@ -207,7 +208,7 @@ while in_game:
             screen.blit(overlay, (0,0))
             screen.blit(text_win, text_win.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)))
             pg.display.flip()
-            waiting, win_confirmed = True, True
+            waiting, win_confirmed, restart_on_win = True, True, True
             
             while waiting:
                 for event in pg.event.get():
@@ -216,32 +217,6 @@ while in_game:
                             waiting, running = False, False
                         else:
                             waiting = False
-
-
-    ### LOSING SCREEN ###
-    waiting = True
-    while waiting and in_game:
-        #line1 = menufont.render('You lose :(', True, dark_color)
-        line2 = menufont.render('Press R to restart or Q/ESC to quit', True, dark_color)
-
-        for event in pg.event.get():
-            # Did the user hit a key?
-            if event.type == KEYDOWN:
-                if event.key == K_r:
-                    waiting = False
-                    game.game_over = False
-                elif event.key == K_q or event.key == K_ESCAPE:  #quit
-                    waiting = False
-                    in_game = False
-            elif event.type == QUIT:
-                waiting = False 
-                in_game = False
-
-        screen.fill(light_color)        
-        #screen.blit(line1, (10, 10))
-        screen.blit(line2, (10, 50))
-
-        pg.display.flip()
 
 # Done! Time to quit.
 pg.quit()
